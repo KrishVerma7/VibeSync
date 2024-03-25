@@ -53,4 +53,8 @@ dependencies {
 
     //picasso for converting image link given into API
     implementation ("com.squareup.picasso:picasso:2.8")
+
+    //coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }

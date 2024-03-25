@@ -2,6 +2,7 @@ package com.example.vibesync
 
 import android.app.Activity
 import android.media.MediaPlayer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,9 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyAdapter(val context: Activity, val dataList: List<Data>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
@@ -28,24 +32,27 @@ class MyAdapter(val context: Activity, val dataList: List<Data>) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        //populate the data into the view
-        val currentData = dataList[position]
 
-        val mediaPlayer = MediaPlayer.create(context, currentData.preview.toUri())
+        CoroutineScope(Dispatchers.Main).launch {
+            //populate the data into the view
+            val currentData = dataList[position]
 
-        holder.title.text = currentData.title
+            val mediaPlayer = MediaPlayer.create(context, currentData.preview.toUri())
 
-        Picasso.get().load(currentData.album.cover).into(holder.image)
+            holder.title.text = currentData.title
+            CoroutineScope(Dispatchers.Main).launch {
+                Log.d("thread", "thread_image - ${Thread.currentThread().name}")
+                Picasso.get().load(currentData.album.cover).into(holder.image)
+            }
+            holder.play.setOnClickListener {
+                mediaPlayer.start()
+            }
 
-        holder.play.setOnClickListener {
-            mediaPlayer.start()
-        }
-
-        holder.pause.setOnClickListener {
-            mediaPlayer.pause()
+            holder.pause.setOnClickListener {
+                mediaPlayer.pause()
+            }
         }
     }
-
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView
         val title: TextView
